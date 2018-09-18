@@ -1,0 +1,44 @@
+Dependencies for programs to be installed
+
+sudo apt-get install build-essential gcc g++ bison flex perl tcl-dev tk-dev blt libxml2-dev zlib1g-dev default-jre doxygen graphviz libwebkitgtk-1.0-0 openmpi-bin libopenmpi-dev libpcap-dev autoconf automake libtool libproj-dev libfox-1.6-dev libgdal-dev libxerces-c-dev qt4-dev-tools
+
+(more)
+
+
+->First install SUMO. Since the last version of SUMO is not yet well documented and older version was used, sumo-0.32.0. Download from following link:
+
+https://sourceforge.net/projects/sumo/files/sumo/version%200.32.0/sumo-all-0.32.0.tar.gz/download
+
+extract folder and run
+$ ./configure
+$ make
+
+add the folder location to PATH in .bashrc
+$ echo 'export PATH=$PATH:<path to file>/sumo-0.32.0' >> ~/.bashrc
+$ source ~/.bashrc
+
+->After that install OMNet++. the most recent version worked for me (5.4.1-Linux). Download from
+
+https://www.omnetpp.org/omnetpp
+
+extract folder and run
+$ ./configure
+$ make
+
+add the folder location to PATH in .bashrc
+$ echo 'export PATH=$PATH:<path to file>/omnetpp-5.4.1/bin' >> ~/.bashrc
+$ source ~/.bashrc
+
+->Download Veins.
+
+http://veins.car2x.org/download/
+
+Start OMNet++
+$ omnetpp
+The first time you run it a window will appear asking for a folder to use, create a new folder somewhere. Another window will ask if you want to install examples on the new folder, install only inet.
+On the workspace select 'File>General>Existing Projects into Workspace' and select the veins folder
+BUild project: 'Project>Build All'
+
+->Download PLEXE
+Now follow the instructions from this website
+http://plexe.car2x.org/building/
