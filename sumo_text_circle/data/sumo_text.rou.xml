@@ -1,0 +1,15 @@
+<!--<?xml version="1.0" encoding="UTF-8"?>
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+
+  <vType accel="1.0" decel="5.0" id="Car" length="5.0" minGap="2.0" maxSpeed="50.0" sigma="0" />
+
+ 
+<routes id="route0" edges="edge1 edge2" />  
+   <vehicle depart="1" id="veh0" route="route0" type="Car" />
+
+</routes>-->
+
+<routes>
+   <vType id="car" type="passenger" length="5" accel="8.5" decel="2.2" sigma="1.0" />
+   <flow id="carflow" type="car" beg="0" end="0" number="20" from="edge1" to="edge2" />
+</routes>
