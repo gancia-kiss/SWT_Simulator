@@ -13,8 +13,8 @@
     <trip id="7" depart="7.00" from="gneE6" to="gneE6"/>
     <trip id="8" depart="8.00" from="gneE12" to="gneE11"/>
     <trip id="9" depart="9.00" from="gneE5" to="gneE11">
-            <stop lane="gnE5_0" endPos="5" />
-    <trip/>
+            <stop lane=":gnE5_0" endPos="5" />
+    </trip>
 </routes>
 
 

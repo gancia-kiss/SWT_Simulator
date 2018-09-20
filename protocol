@@ -24,7 +24,7 @@ https://www.omnetpp.org/omnetpp
 extract folder and run
 $ ./configure
 $ make
-
+ ''
 add the folder location to PATH in .bashrc
 $ echo 'export PATH=$PATH:<path to file>/omnetpp-5.4.1/bin' >> ~/.bashrc
 $ source ~/.bashrc
