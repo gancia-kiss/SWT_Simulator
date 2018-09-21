@@ -369,6 +369,10 @@ private:
 
     double _sensor_error(double pos) const;
 
+    double _delay(double pos) const;
+
+    double _vec_init() const;
+
 private:
 
     /// @brief the car following model which drives the car when automated cruising is disabled, i.e., the human driver

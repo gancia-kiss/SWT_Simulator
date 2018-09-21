@@ -37,11 +37,20 @@
 #include <libsumo/Vehicle.h>
 #include <libsumo/TraCIDefs.h>
 #include <random>
+#include <iostream>
 
 
 #ifndef sgn
 #define sgn(x) ((x > 0) - (x < 0))
 #endif
+
+int ola=0;
+#define del 10
+#define pred_pos 15
+double vec[10];
+int it=0;
+double ierr=0;
+double derr=0;
 
 // ===========================================================================
 // method definitions
@@ -307,6 +316,11 @@ MSCFModel_CC::_v(const MSVehicle* const veh, double gap2pred, double egoSpeed, d
 
     CC_VehicleVariables* vars = (CC_VehicleVariables*) veh->getCarFollowVariables();
 
+    if(ola==0)
+    {
+        _vec_init();
+    }
+
     if (vars->crashed || vars->crashedVictim)
         return 0;
 
@@ -445,7 +459,7 @@ MSCFModel_CC::_v(const MSVehicle* const veh, double gap2pred, double egoSpeed, d
             case Plexe::MYCC:
 
                 if (vars->frontInitialized)
-                    controllerAcceleration = _mycc(veh, egoSpeed, vars->frontSpeed, gap2pred);
+                    controllerAcceleration = _flatbed(veh, veh->getAcceleration(), egoSpeed, predSpeed, gap2pred, leaderSpeed);//_mycc(veh, egoSpeed, vars->frontSpeed, gap2pred);
                 else
                     controllerAcceleration = 0;
                 break;
@@ -617,20 +631,24 @@ double
 MSCFModel_CC::_flatbed(const MSVehicle *veh, double egoAcceleration, double egoSpeed, double predSpeed,
                        double gap2pred, double leaderSpeed) const {
     CC_VehicleVariables* vars = (CC_VehicleVariables*) veh->getCarFollowVariables();
-    return (
-        -vars->flatbedKa * egoAcceleration +
-        vars->flatbedKv * (predSpeed - egoSpeed) +
-        vars->flatbedKp * (gap2pred - vars->flatbedD - vars->flatbedH * (egoSpeed - leaderSpeed))
-    );
+
+    double delay_pos = _delay(_sensor_error(gap2pred));
+    double err = gap2pred-pred_pos;
+    ierr = 0.9*ierr+err;
+    double d = err - derr;
+    derr=err;
+    return 6*err - 0.02*ierr*0.01 + 0.05*d/0.01;
 }
 
 double
 MSCFModel_CC::_mycc(const MSVehicle *veh, double egoSpeed, double predSpeed, double gap2pred) const {
     CC_VehicleVariables* vars = (CC_VehicleVariables*)veh->getCarFollowVariables();
-    if(_sensor_error(gap2pred)>28)
+    if(_sensor_error(gap2pred)>28){
         return  0;//vars->myccKd * (_sensor_error(gap2pred) - 50) + vars->myccKs * (predSpeed - egoSpeed);
-    else
+    }
+    else{
         return -15;
+    }
 }
 
 double
@@ -656,9 +674,25 @@ MSCFModel_CC::_sensor_error(double pos) const {
     // Mersenne twister PRNG, initialized with seed from previous random device instance
     std::mt19937 gen(rd()); 
     // instance of class std::normal_distribution with specific mean and stddev
-    std::normal_distribution<double> d(0, 0.5); 
+    std::normal_distribution<double> d(0, 0.15); 
     pos=pos+d(gen);
     return pos;
+}
+
+double
+MSCFModel_CC::_delay(double pos) const {
+    int l_pos;
+    it++;
+    l_pos=vec[it%del];
+    vec[it%del]=pos;
+    return l_pos;
+}
+
+double
+MSCFModel_CC::_vec_init() const {
+    for (int i=0; i<del; ++i) {vec[i]=30;}
+    ola=1;
+    return 0;
 }
 
 void MSCFModel_CC::setParameter(MSVehicle *veh, const std::string& key, const std::string& value) const {
