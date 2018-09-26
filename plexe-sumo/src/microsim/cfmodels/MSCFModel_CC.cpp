@@ -630,7 +630,7 @@ MSCFModel_CC::_flatbed(const MSVehicle *veh, double egoAcceleration, double egoS
                        double gap2pred, double leaderSpeed) const {
     CC_VehicleVariables* vars = (CC_VehicleVariables*) veh->getCarFollowVariables();
     
-    leaderSpeed=_delay(leaderSpeed)
+    leaderSpeed=_delay(leaderSpeed);
     return 2*(leaderSpeed-egoSpeed)*abs(egoSpeed-leaderSpeed);
     
 }
