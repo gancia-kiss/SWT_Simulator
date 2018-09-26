@@ -52,7 +52,7 @@ CC_VehicleVariables::CC_VehicleVariables() :
     useFixedAcceleration(0), fixedAcceleration(0),
     crashed(false), crashedVictim(false),
     ccDesiredSpeed(14), ccKp(1), activeController(Plexe::DRIVER),
-    nInitialized(0), position(-1), nCars(8),
+    nInitialized(0), position(-1), nCars(2),
     caccXi(-1), caccOmegaN(-1), caccC1(-1), caccAlpha1(-1), caccAlpha2(-1),
     caccAlpha3(-1), caccAlpha4(-1), caccAlpha5(-1), caccSpacing(5),
     engineTau(0.5),
