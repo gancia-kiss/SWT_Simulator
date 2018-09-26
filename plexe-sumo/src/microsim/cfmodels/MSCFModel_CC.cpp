@@ -45,7 +45,7 @@
 #endif
 
 int ola=0;
-#define del 10
+#define del 2
 #define pred_pos 15
 double vec[10];
 int it=0;
@@ -410,10 +410,7 @@ MSCFModel_CC::_v(const MSVehicle* const veh, double gap2pred, double egoSpeed, d
                 if (vars->autoFeed)
                     getVehicleInformation(vars->frontVehicle, vars->frontSpeed, vars->frontAcceleration, vars->frontControllerAcceleration, pos, time);
 
-                if (vars->useControllerAcceleration)
-                    predAcceleration = vars->frontControllerAcceleration;
-                else
-                    predAcceleration = vars->frontAcceleration;
+                
                 //check if we received at least one packet
                 if (vars->frontInitialized)
                     //ploeg's controller computes \dot{u}_i, so we need to sum such value to the previously computed u_i
@@ -459,7 +456,7 @@ MSCFModel_CC::_v(const MSVehicle* const veh, double gap2pred, double egoSpeed, d
             case Plexe::MYCC:
 
                 if (vars->frontInitialized)
-                    controllerAcceleration = _flatbed(veh, veh->getAcceleration(), egoSpeed, predSpeed, gap2pred, leaderSpeed);//_mycc(veh, egoSpeed, vars->frontSpeed, gap2pred);
+                    controllerAcceleration = _mycc(veh, egoSpeed, vars->frontSpeed, gap2pred);
                 else
                     controllerAcceleration = 0;
                 break;
@@ -522,12 +519,13 @@ MSCFModel_CC::_ploeg(const MSVehicle *veh, double egoSpeed, double predSpeed, do
 
     CC_VehicleVariables* vars = (CC_VehicleVariables*)veh->getCarFollowVariables();
 
-    return (1/vars->ploegH * (
-        -vars->controllerAcceleration +
-        vars->ploegKp * (gap2pred - (2 + vars->ploegH * egoSpeed)) +
-        vars->ploegKd * (predSpeed - egoSpeed - vars->ploegH * veh->getAcceleration()) +
-        predAcceleration
-    )) * TS ;
+    
+    double delay_pos = _delay(_sensor_error(gap2pred));
+    double err = gap2pred-pred_pos;
+    ierr = 0.9*ierr+err;
+    double d = err - derr;
+    derr=err;
+    return 6*err - 0.02*ierr*0.01 + 0.05*d/0.01;
 
 }
 
@@ -631,19 +629,16 @@ double
 MSCFModel_CC::_flatbed(const MSVehicle *veh, double egoAcceleration, double egoSpeed, double predSpeed,
                        double gap2pred, double leaderSpeed) const {
     CC_VehicleVariables* vars = (CC_VehicleVariables*) veh->getCarFollowVariables();
-
-    double delay_pos = _delay(_sensor_error(gap2pred));
-    double err = gap2pred-pred_pos;
-    ierr = 0.9*ierr+err;
-    double d = err - derr;
-    derr=err;
-    return 6*err - 0.02*ierr*0.01 + 0.05*d/0.01;
+    
+    leaderSpeed=_delay(leaderSpeed)
+    return 2*(leaderSpeed-egoSpeed)*abs(egoSpeed-leaderSpeed);
+    
 }
 
 double
 MSCFModel_CC::_mycc(const MSVehicle *veh, double egoSpeed, double predSpeed, double gap2pred) const {
     CC_VehicleVariables* vars = (CC_VehicleVariables*)veh->getCarFollowVariables();
-    if(_sensor_error(gap2pred)>28){
+    if(_delay(gap2pred)>=15){
         return  0;//vars->myccKd * (_sensor_error(gap2pred) - 50) + vars->myccKs * (predSpeed - egoSpeed);
     }
     else{
