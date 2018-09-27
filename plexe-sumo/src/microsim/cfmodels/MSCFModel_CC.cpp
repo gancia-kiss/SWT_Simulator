@@ -45,8 +45,8 @@
 #endif
 
 int ola=0;
-#define del 2
-#define pred_pos 15
+#define del 2        //delay 300 ~ 0.5s   (it might be a good idea for del to be multiple of the number of cars)
+#define pred_pos 15  //Distance between cars
 double vec[10];
 int it=0;
 double ierr=0;
@@ -638,8 +638,8 @@ MSCFModel_CC::_flatbed(const MSVehicle *veh, double egoAcceleration, double egoS
 double
 MSCFModel_CC::_mycc(const MSVehicle *veh, double egoSpeed, double predSpeed, double gap2pred) const {
     CC_VehicleVariables* vars = (CC_VehicleVariables*)veh->getCarFollowVariables();
-    if(_delay(gap2pred)>=15){
-        return  0;//vars->myccKd * (_sensor_error(gap2pred) - 50) + vars->myccKs * (predSpeed - egoSpeed);
+    if(_delay(gap2pred)>=pred_pos-0.8){
+        return  15;//vars->myccKd * (_sensor_error(gap2pred) - 50) + vars->myccKs * (predSpeed - egoSpeed);
     }
     else{
         return -15;
